@@ -1,9 +1,11 @@
 import { createApp } from '@divvi/mobile'
 import { registerRootComponent } from 'expo'
 import Constants from 'expo-constants'
-import React from 'react'
-import CustomScreen from './screens/CustomScreen'
-import PlaygroundScreen from './screens/PlaygroundScreen'
+// import CustomScreen from './screens/CustomScreen'
+import Discover from './assets/Discover'
+import Home from './assets/Home'
+import HomeScreen from './screens/HomeScreen'
+import InfoScreen from './screens/InfoScreen'
 
 const expoConfig = Constants.expoConfig
 if (!expoConfig) {
@@ -43,29 +45,31 @@ const App = createApp({
     'zh-CN': require('./locales/zh-CN.json'),
   },
   screens: {
-    tabs: ({ defaultTabs }) => {
+    tabs: () => {
       return {
         screens: [
-          defaultTabs.wallet,
-          defaultTabs.activity,
-          defaultTabs.discover,
-          defaultTabs.earn,
           {
-            name: 'playground',
-            component: PlaygroundScreen,
-            // TODO: add icon
-            icon: () => null,
-            label: (t) => t('playground'),
+            name: 'home',
+            component: HomeScreen,
+            icon: Home,
+            label: (t) => t('home'),
+          },
+          {
+            name: 'info',
+            component: InfoScreen,
+            // TODO: add info icon
+            icon: Discover,
+            label: (t) => t('Info'),
           },
         ],
-        initialScreen: 'activity',
+        initialScreen: 'playground',
       }
     },
-    custom: (Screen) => (
-      <>
-        <Screen name="CustomScreen" component={CustomScreen} options={{ headerShown: true }} />
-      </>
-    ),
+    // custom: (Screen) => (
+    //   <>
+    //     <Screen name="CustomScreen" component={CustomScreen} options={{ headerShown: true }} />
+    //   </>
+    // ),
   },
 })
 
