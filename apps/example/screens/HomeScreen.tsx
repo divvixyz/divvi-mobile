@@ -1,21 +1,34 @@
+import { useWallet } from '@divvi/mobile'
+import BigNumber from 'bignumber.js'
 import React from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 
 export default function HomeScreen() {
+  const { tokens } = useWallet()
+  // TODO: Filter so only getting tokens that are investable
+  const tokenBalance = tokens.reduce((acc, token) => acc.plus(token.balance), new BigNumber(0))
+
+  // TODO: Get these values from backend
+  const initialInvestment = new BigNumber(100)
+  const totalValue = new BigNumber(102.4)
+  const percentageChange = totalValue.minus(initialInvestment).dividedBy(initialInvestment).times(100)
+  const averageApy = 7.89
+  const marketCap = 100000000  // TODO: Figure out how to format better
+
   return (
     <View style={styles.container}>
       <View style={styles.valueSection}>
         <Text style={styles.sectionTitle}>{'Total Value of Investments'}</Text>
-        <Text style={styles.totalValue}>{'$102.40 (+2.4%)'}</Text>
+        <Text style={styles.totalValue}>{`$${totalValue.toFixed(2)} (${percentageChange}%)`}</Text>
         <View style={styles.breakdown}>
           <View>
             <Text style={styles.subtitle}>{'Initial Investment'} </Text>
-            <Text>{'$100.00'} </Text>
+            <Text>{`$${initialInvestment.toFixed(2)}`} </Text>
           </View>
           <View>
             <Text style={styles.subtitle}>{'Tokens to Invest'}</Text>
             <View>
-              <Text>{'$0.00'} </Text>
+              <Text>{`$${tokenBalance.toFixed(2)}`} </Text>
             </View>
           </View>
         </View>
@@ -41,11 +54,11 @@ export default function HomeScreen() {
         </Text>
         <View style={styles.rowLineItem}>
           <Text>{'Average APY'}</Text>
-          <Text>{'7.89%'}</Text>
+          <Text>{`${averageApy}%`}</Text>
         </View>
         <View style={styles.rowLineItem}>
           <Text>{'Market Cap'}</Text>
-          <Text>{'$100M'}</Text>
+          <Text>{`$${marketCap}`}</Text>
         </View>
         <View style={{paddingHorizontal: 36, paddingVertical: 12}}>
         <Pressable
