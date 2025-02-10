@@ -1,3 +1,4 @@
+/* eslint-disable require-yield */
 import { mockAccount } from 'test/values'
 import {
   UnlockResult as InternalUnlockResult,
