@@ -24,6 +24,7 @@ export interface ProviderSelectionAnalyticsData {
   networkId: string | undefined
 }
 
+export type FiatExchangeFlowType = typeof FiatExchangeFlow
 export enum FiatExchangeFlow {
   CashIn = 'CashIn',
   CashOut = 'CashOut',
