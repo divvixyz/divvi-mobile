@@ -59,6 +59,6 @@ export function useWallet() {
   return {
     address,
     tokens,
-    earnPositions
+    earnPositions,
   }
 }
