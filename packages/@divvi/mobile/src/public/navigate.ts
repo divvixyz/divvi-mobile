@@ -9,7 +9,7 @@ import type { LoggerType } from '../utils/Logger'
 import type { NetworkConfig } from '../web3/networkConfig'
 import type { NetworkId } from './types'
 
-const TAG = 'Navigate'
+const TAG = 'public/navigate'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
