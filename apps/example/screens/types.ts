@@ -1,6 +1,6 @@
 import { NativeStackScreenProps, StackParamList } from '@divvi/mobile'
 
-export type RootStackParamList = StackParamList & {
+type RootStackParamList = StackParamList & {
   Playground: undefined
   CustomScreen: {
     someParam: string
