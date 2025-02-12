@@ -89,6 +89,7 @@ export function navigate(...[routeName, params]: NavigateArgs): void {
         })
         const tokenInfo = params ? tokens[params.tokenId] : undefined
         if (tokenInfo && tokenInfo.isCashInEligible) {
+          // TODO: we should refactor FiatExchangeAmount so it can accept just a tokenId, without the need for the tokenSymbol
           internalNavigate(Screens.FiatExchangeAmount, {
             tokenId: params.tokenId,
             flow: CICOFlow.CashIn,
