@@ -1,35 +1,29 @@
+import { getMockStoreData } from 'test/utils'
+import { mockAaveArbUsdcTokenId, mockTokenBalances, mockUSDCTokenId } from 'test/values'
+import { CICOFlow, FiatExchangeFlow } from '../fiatExchanges/types'
+import { navigate as internalNavigate } from '../navigator/NavigationService'
+import { Screens } from '../navigator/Screens'
+import { store } from '../redux/store'
 import { navigate } from './navigate'
 
-// Mock the required internal modules
-jest.mock('../navigator/NavigationService', () => ({
-  navigate: jest.fn(),
-}))
+jest.mock('../navigator/NavigationService')
 
-const mockInternalNavigate = require('../navigator/NavigationService').navigate
+jest.mock('../redux/store', () => ({ store: { getState: jest.fn() } }))
+
+const mockStore = jest.mocked(store)
+mockStore.getState.mockImplementation(() =>
+  getMockStoreData({
+    tokens: {
+      tokenBalances: {
+        ...mockTokenBalances,
+      },
+    },
+  })
+)
 
 describe('navigate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-  })
-
-  it('should navigate to swap screen without params', () => {
-    navigate('Swap')
-
-    expect(mockInternalNavigate).toHaveBeenCalledWith('SwapScreenWithBack', undefined)
-  })
-
-  it('should navigate to swap screen with valid params', () => {
-    navigate('Swap', {
-      fromTokenId: 'token1',
-      toTokenId: 'token2',
-      toTokenNetworkId: 'celo-mainnet',
-    })
-
-    expect(mockInternalNavigate).toHaveBeenCalledWith('SwapScreenWithBack', {
-      fromTokenId: 'token1',
-      toTokenId: 'token2',
-      toTokenNetworkId: 'celo-mainnet',
-    })
   })
 
   it('should type check navigation parameters', () => {
@@ -52,21 +46,75 @@ describe('navigate', () => {
     navigate('Swap', { fromTokenId: 'token1', invalidParam: 'foo' })
 
     // Just to have an assertion and avoid linting error
-    expect(mockInternalNavigate).toHaveBeenCalled()
+    expect(internalNavigate).toHaveBeenCalled()
   })
 
-  it('should allow navigation to custom screens', () => {
-    // Using type assertion to simulate a custom screen
-    navigate('CustomScreen' as any)
+  describe('Swap', () => {
+    it('should navigate to swap screen without params', () => {
+      navigate('Swap')
 
-    expect(mockInternalNavigate).toHaveBeenCalledWith('CustomScreen', undefined)
+      expect(internalNavigate).toHaveBeenCalledWith(Screens.SwapScreenWithBack, undefined)
+    })
+
+    it('should navigate to swap screen with valid params', () => {
+      navigate('Swap', {
+        fromTokenId: 'token1',
+        toTokenId: 'token2',
+        toTokenNetworkId: 'celo-mainnet',
+      })
+
+      expect(internalNavigate).toHaveBeenCalledWith(Screens.SwapScreenWithBack, {
+        fromTokenId: 'token1',
+        toTokenId: 'token2',
+        toTokenNetworkId: 'celo-mainnet',
+      })
+    })
   })
 
-  it('should allow navigation to custom screens with params', () => {
-    navigate('CustomScreenWithParams' as any, { customParam: 'test' } as any)
+  describe('Add', () => {
+    it('should navigate to FiatExchangeAmount for cash-in eligible token', () => {
+      const tokenId = mockUSDCTokenId
+      navigate('Add', { tokenId })
 
-    expect(mockInternalNavigate).toHaveBeenCalledWith('CustomScreenWithParams', {
-      customParam: 'test',
+      expect(internalNavigate).toHaveBeenCalledWith(Screens.FiatExchangeAmount, {
+        tokenId,
+        flow: CICOFlow.CashIn,
+        tokenSymbol: 'USDC',
+      })
+    })
+
+    it('should navigate to FiatExchangeCurrencyBottomSheet for cash-in ineligible token', () => {
+      const tokenId = mockAaveArbUsdcTokenId
+      navigate('Add', { tokenId })
+
+      expect(internalNavigate).toHaveBeenCalledWith(Screens.FiatExchangeCurrencyBottomSheet, {
+        flow: FiatExchangeFlow.CashIn,
+      })
+    })
+
+    it('should navigate to FiatExchangeCurrencyBottomSheet when no tokenId is provided', () => {
+      navigate('Add')
+
+      expect(internalNavigate).toHaveBeenCalledWith(Screens.FiatExchangeCurrencyBottomSheet, {
+        flow: FiatExchangeFlow.CashIn,
+      })
+    })
+  })
+
+  describe('Custom', () => {
+    it('should allow navigation to custom screens', () => {
+      // Using type assertion to simulate a custom screen
+      navigate('CustomScreen' as any)
+
+      expect(internalNavigate).toHaveBeenCalledWith('CustomScreen', undefined)
+    })
+
+    it('should allow navigation to custom screens with params', () => {
+      navigate('CustomScreenWithParams' as any, { customParam: 'test' } as any)
+
+      expect(internalNavigate).toHaveBeenCalledWith('CustomScreenWithParams', {
+        customParam: 'test',
+      })
     })
   })
 })
