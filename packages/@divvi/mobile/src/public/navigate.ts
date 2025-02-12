@@ -1,9 +1,15 @@
 // See useWallet for why we don't directly import internal modules, except for the types
-import type { FiatExchangeFlowType } from '../fiatExchanges/types'
+import type { CICOFlowType, FiatExchangeFlowType } from '../fiatExchanges/types'
 import type { Navigate } from '../navigator/NavigationService'
 import type { ScreensType } from '../navigator/Screens'
+import type { Store } from '../redux/store'
+import type { TokensByIdSelector } from '../tokens/selectors'
 import type { NetworkId as InternalNetworkId } from '../transactions/types'
+import type { LoggerType } from '../utils/Logger'
+import type { NetworkConfig } from '../web3/networkConfig'
 import type { NetworkId } from './types'
+
+const TAG = 'Navigate'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -23,7 +29,11 @@ export type StackParamList = {
         toTokenNetworkId?: NetworkId
       }
     | undefined
-  Add: undefined
+  Add:
+    | {
+        tokenId: string
+      }
+    | undefined
   Withdraw: undefined
   TabWallet: undefined
   TabActivity: undefined
@@ -41,9 +51,14 @@ type NavigateArgs = {
 
 export function navigate(...[routeName, params]: NavigateArgs): void {
   const internalNavigate = require('../navigator/NavigationService').navigate as Navigate
+  const Logger = require('../utils/Logger').default as LoggerType
+  const store = require('../redux/store').store as Store
+  const tokensByIdSelector = require('../tokens/selectors').tokensByIdSelector as TokensByIdSelector
+  const networkConfig = require('../web3/networkConfig').default as NetworkConfig
   const Screens = require('../navigator/Screens').Screens as ScreensType
   const FiatExchangeFlow = require('../fiatExchanges/types')
     .FiatExchangeFlow as FiatExchangeFlowType
+  const CICOFlow = require('../fiatExchanges/types').CICOFlow as CICOFlowType
 
   switch (routeName) {
     case 'Send':
@@ -67,6 +82,27 @@ export function navigate(...[routeName, params]: NavigateArgs): void {
       )
       break
     case 'Add':
+      if (params?.tokenId) {
+        const networkIds = Object.values(networkConfig.networkToNetworkId)
+        const tokens = tokensByIdSelector(store.getState(), {
+          networkIds,
+        })
+        const tokenInfo = params ? tokens[params.tokenId] : undefined
+        if (tokenInfo && tokenInfo.isCashInEligible) {
+          internalNavigate(Screens.FiatExchangeAmount, {
+            tokenId: params.tokenId,
+            flow: CICOFlow.CashIn,
+            tokenSymbol: tokenInfo.symbol,
+          })
+          return
+        } else {
+          Logger.warn(
+            TAG,
+            `Unable to find a token eligible for cash in with tokenId: ${params?.tokenId}`
+          )
+        }
+      }
+
       internalNavigate(Screens.FiatExchangeCurrencyBottomSheet, { flow: FiatExchangeFlow.CashIn })
       break
     case 'Withdraw':

@@ -31,6 +31,7 @@ export enum FiatExchangeFlow {
   Spend = 'Spend',
 }
 
+export type CICOFlowType = typeof CICOFlow
 export enum CICOFlow {
   CashIn = 'CashIn',
   CashOut = 'CashOut',
