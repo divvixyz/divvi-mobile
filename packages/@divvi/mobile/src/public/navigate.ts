@@ -33,7 +33,7 @@ export type StackParamList = {
 
 export type { NativeStackScreenProps } from '@react-navigation/native-stack'
 
-export type NavigateArgs = {
+type NavigateArgs = {
   [RouteName in keyof DivviNavigation.RootParamList]: undefined extends DivviNavigation.RootParamList[RouteName]
     ? [RouteName] | [RouteName, DivviNavigation.RootParamList[RouteName]]
     : [RouteName, DivviNavigation.RootParamList[RouteName]]

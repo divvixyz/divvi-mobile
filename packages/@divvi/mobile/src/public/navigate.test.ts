@@ -50,6 +50,9 @@ describe('navigate', () => {
 
     // @ts-expect-error - Extra invalid parameter
     navigate('Swap', { fromTokenId: 'token1', invalidParam: 'foo' })
+
+    // Just to have an assertion and avoid linting error
+    expect(mockInternalNavigate).toHaveBeenCalled()
   })
 
   it('should allow navigation to custom screens', () => {
