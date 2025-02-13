@@ -21,11 +21,14 @@ mockStore.getState.mockImplementation(() =>
   })
 )
 
+// Note: when adding a new public route, add a test for it only if it's a non trivial mapping to an internal screen
 describe('navigate', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
+  // This is a sanity check to ensure that the navigate function is type-safe
+  // Using a couple of examples is enough.
   it('should type check navigation parameters', () => {
     // These should compile without type errors
     navigate('Swap')
