@@ -95,6 +95,7 @@
     "@expo/config-plugins": "~9.0.12",
     "@faker-js/faker": "^5.5.3",
     "@mento-protocol/mento-sdk": "^0.2.3",
+    "@tsconfig/node-lts": "^22.0.1",
     "@types/fs-extra": "^9.0.13",
     "@types/react": "~18.3.12",
     "@walletconnect/sign-client": "^2.13.3",
