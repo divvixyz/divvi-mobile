@@ -1,6 +1,0 @@
-{
-  "extends": [
-    "../../../node_modules/expo/tsconfig.base.json",
-    "../../../node_modules/@divvi/mobile/tsconfig.json"
-  ]
-}
